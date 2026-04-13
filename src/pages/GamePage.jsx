@@ -40,7 +40,6 @@ export default function GamePage() {
     setComment("");
   }
 
-  // 🔥 Delete Review
   function deleteReview(index) {
     const games = getGames();
 
@@ -74,7 +73,6 @@ export default function GamePage() {
         className="w-full max-h-96 object-cover rounded-xl mb-5"
       />
 
-      {/* Add Review */}
       <div className="bg-gray-800 p-4 rounded-xl mb-6">
         <textarea
           placeholder="Write your review..."
@@ -103,7 +101,6 @@ export default function GamePage() {
         </div>
       </div>
 
-      {/* Reviews */}
       <div className="space-y-4">
         {game.reviews.length === 0 ? (
           <p className="text-gray-400">No reviews yet</p>

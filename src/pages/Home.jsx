@@ -10,12 +10,10 @@ export default function Home() {
 
   const navigate = useNavigate();
 
-  // Load games
   useEffect(() => {
     setGames(getGames());
   }, []);
 
-  // 📁 Upload image from PC
   function handleImageUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -25,7 +23,6 @@ export default function Home() {
     reader.readAsDataURL(file);
   }
 
-  // ➕ Add game
   function addGame() {
     if (!title || !image) return;
 
@@ -44,7 +41,6 @@ export default function Home() {
     setImage("");
   }
 
-  // 🗑️ Delete game
   function deleteGame(id) {
     const confirmDelete = window.confirm("Are you sure you want to delete this game?");
     if (!confirmDelete) return;
@@ -54,7 +50,6 @@ export default function Home() {
     saveGames(updated);
   }
 
-  // 🔍 Real-time search
   const filteredGames = games.filter((g) =>
     g.title.toLowerCase().includes(search.toLowerCase())
   );
@@ -62,12 +57,10 @@ export default function Home() {
   return (
     <div className="p-6 max-w-6xl mx-auto text-white">
 
-      {/* Title */}
       <h1 className="text-3xl font-bold mb-6 text-center">
         🎮 Game Review Hub
       </h1>
 
-      {/* 🔍 Search Bar */}
       <input
         type="text"
         placeholder="Search games..."
@@ -76,10 +69,8 @@ export default function Home() {
         className="w-full mb-5 p-3 rounded bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
       />
 
-      {/* ➕ Add Game Section */}
       <div className="bg-gray-800 p-4 rounded-xl mb-6 flex flex-col md:flex-row gap-3 items-center">
 
-        {/* Title Input */}
         <input
           placeholder="Game title"
           value={title}
@@ -87,7 +78,6 @@ export default function Home() {
           className="flex-1 p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none"
         />
 
-        {/* Hidden File Input */}
         <input
           type="file"
           accept="image/*"
@@ -96,7 +86,6 @@ export default function Home() {
           className="hidden"
         />
 
-        {/* Upload Button */}
         <label
           htmlFor="fileUpload"
           className="cursor-pointer bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded font-semibold transition"
@@ -104,7 +93,6 @@ export default function Home() {
           📁 Upload Image
         </label>
 
-        {/* Add Button */}
         <button
           onClick={addGame}
           className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded font-semibold transition"
@@ -113,7 +101,6 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Image Preview */}
       {image && (
         <div className="mb-6">
           <p className="text-sm text-gray-400 mb-2">Preview:</p>
@@ -125,7 +112,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* 🎮 Games Grid */}
       {filteredGames.length === 0 ? (
         <p className="text-center text-gray-400">No games found</p>
       ) : (
@@ -135,7 +121,6 @@ export default function Home() {
               key={game.id}
               className="relative bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition"
             >
-              {/* 🗑️ Delete Button */}
               <button
                 onClick={() => deleteGame(game.id)}
                 className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 px-2 py-1 text-xs rounded z-10"
@@ -143,7 +128,6 @@ export default function Home() {
                 🗑️
               </button>
 
-              {/* Game Card */}
               <div onClick={() => navigate(`/game/${game.id}`)} className="cursor-pointer">
                 <img
                   src={game.image}
