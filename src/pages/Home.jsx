@@ -133,7 +133,6 @@ export default function Home() {
                 🗑️
               </button>
 
-              {/* Image + Overlay */}
               <div
                 onClick={() => navigate(`/game/${game.id}`)}
                 className="cursor-pointer relative"
@@ -144,7 +143,6 @@ export default function Home() {
                   className="w-full h-44 object-cover"
                 />
 
-                {/* Title Overlay */}
                 <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-2">
                   <h2 className="text-sm font-bold text-white">
                     {game.title}
