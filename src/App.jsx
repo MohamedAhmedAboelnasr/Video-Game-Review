@@ -9,7 +9,7 @@ export default function App() {
   return (
     <BrowserRouter>
 
-      {/* Navbar */}
+      {/* MohamedAhmed1225} */}
       <Navbar />
 
       <div className="min-h-screen">
@@ -26,4 +26,3 @@ export default function App() {
 }
 
 
-//MohamedAhmed1225
