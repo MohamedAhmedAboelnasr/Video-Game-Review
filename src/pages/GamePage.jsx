@@ -59,6 +59,7 @@ export default function GamePage() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
+
       <button
         onClick={() => navigate("/")}
         className="mb-4 text-blue-400 hover:underline"
@@ -68,11 +69,14 @@ export default function GamePage() {
 
       <h1 className="text-3xl font-bold mb-3">{game.title}</h1>
 
+      {/* ✅ FIXED IMAGE (NO CROPPING) */}
       <img
         src={game.image}
-        className="w-full max-h-96 object-cover rounded-xl mb-5"
+        alt={game.title}
+        className="w-full max-h-[500px] object-contain bg-black rounded-xl mb-5"
       />
 
+      {/* Add Review */}
       <div className="bg-gray-800 p-4 rounded-xl mb-6">
         <textarea
           placeholder="Write your review..."
@@ -101,6 +105,7 @@ export default function GamePage() {
         </div>
       </div>
 
+      {/* Reviews */}
       <div className="space-y-4">
         {game.reviews.length === 0 ? (
           <p className="text-gray-400">No reviews yet</p>
@@ -109,9 +114,9 @@ export default function GamePage() {
             <div key={i} className="relative group">
               <button
                 onClick={() => deleteReview(i)}
-                className="absolute top-2 right-2 bg-red-600 px-2 py-1 text-xs rounded hidden group-hover:block"
+                className="absolute top-2 right-2 bg-red-600 px-2 py-1 text-xs rounded"
               >
-                Delete
+                🗑️
               </button>
 
               <ReviewCard review={r} />
