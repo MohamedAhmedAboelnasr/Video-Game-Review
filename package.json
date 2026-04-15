@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.2.0",
+    "@supabase/supabase-js": "^2.103.2",
     "@tailwindcss/vite": "^4.2.2",
     "axios": "^1.13.6",
     "generate-react-cli": "^11.0.3",
