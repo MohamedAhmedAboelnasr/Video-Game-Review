@@ -6,41 +6,68 @@ export default function Signup() {
   const { signup } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
 
   function handleSignup() {
-    const success = signup(email, password);
+    const result = signup(form);
 
-    if (!success) return alert("User already exists");
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
 
     alert("Account created!");
     navigate("/login");
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="bg-gray-800 p-6 rounded-xl w-80">
+    <div className="flex items-center justify-center min-h-screen text-white">
+      <div className="bg-white/10 backdrop-blur p-6 rounded-xl w-80">
+
         <h1 className="text-2xl mb-4 text-center">Sign Up</h1>
 
         <input
+          name="username"
+          placeholder="Username"
+          onChange={handleChange}
+          className="w-full mb-3 p-2 rounded bg-black/30"
+        />
+
+        <input
+          name="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-3 p-2 rounded bg-gray-700"
+          onChange={handleChange}
+          className="w-full mb-3 p-2 rounded bg-black/30"
         />
 
         <input
           type="password"
+          name="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-3 p-2 rounded bg-gray-700"
+          onChange={handleChange}
+          className="w-full mb-3 p-2 rounded bg-black/30"
+        />
+
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirm Password"
+          onChange={handleChange}
+          className="w-full mb-4 p-2 rounded bg-black/30"
         />
 
         <button
           onClick={handleSignup}
-          className="w-full bg-green-600 p-2 rounded"
+          className="w-full bg-green-500 hover:bg-green-600 p-2 rounded"
         >
           Sign Up
         </button>

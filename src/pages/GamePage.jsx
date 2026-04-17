@@ -13,12 +13,13 @@ export default function GamePage() {
   const [rating, setRating] = useState(5);
   const [reviewSearch, setReviewSearch] = useState("");
 
+  // Load game
   useEffect(() => {
     const games = getGames();
     setGame(games.find((g) => g.id === Number(id)));
   }, [id]);
 
-  // ⭐ Average Rating
+  // ⭐ Average rating
   const avgRating =
     game && game.reviews.length > 0
       ? (
@@ -27,7 +28,7 @@ export default function GamePage() {
         ).toFixed(1)
       : null;
 
-  // ➕ Add Review
+  // ➕ Add review
   function addReview() {
     if (!comment) return;
 
@@ -39,7 +40,11 @@ export default function GamePage() {
             ...g,
             reviews: [
               ...g.reviews,
-              { user: user?.email || "Guest", rating, comment },
+              {
+                user: user?.username || "Guest", // ✅ username used
+                rating,
+                comment,
+              },
             ],
           }
         : g
@@ -51,7 +56,7 @@ export default function GamePage() {
     setRating(5);
   }
 
-  // 🗑️ Delete Review (ONLY OWNER)
+  // 🗑️ Delete review (ONLY OWNER)
   function deleteReview(index) {
     const confirmDelete = window.confirm("Delete this review?");
     if (!confirmDelete) return;
@@ -71,7 +76,13 @@ export default function GamePage() {
     setGame(updated.find((g) => g.id === Number(id)));
   }
 
-  if (!game) return null;
+  if (!game) {
+    return (
+      <div className="p-6 text-white text-center">
+        Game not found
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto text-white">
@@ -98,7 +109,7 @@ export default function GamePage() {
         </p>
       )}
 
-      {/* 🖼️ Image */}
+      {/* 🖼️ Image (NO CROPPING) */}
       <img
         src={game.image}
         alt={game.title}
@@ -111,7 +122,7 @@ export default function GamePage() {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Write review..."
-          className="w-full p-2 rounded bg-black/30 mb-3"
+          className="w-full p-2 rounded bg-black/30 mb-3 focus:outline-none"
         />
 
         {/* ⭐ Star Rating */}
@@ -120,7 +131,9 @@ export default function GamePage() {
             <span
               key={n}
               onClick={() => setRating(n)}
-              className={n <= rating ? "text-yellow-400" : "text-gray-500"}
+              className={
+                n <= rating ? "text-yellow-400" : "text-gray-500"
+              }
             >
               ★
             </span>
@@ -135,7 +148,7 @@ export default function GamePage() {
         </button>
 
         <p className="text-sm text-gray-400 mt-2">
-          Posting as: {user ? user.email : "Guest"}
+          Posting as: {user ? user.username : "Guest"}
         </p>
       </div>
 
@@ -144,7 +157,7 @@ export default function GamePage() {
         placeholder="Search reviews..."
         value={reviewSearch}
         onChange={(e) => setReviewSearch(e.target.value)}
-        className="w-full mb-4 p-2 rounded bg-black/30"
+        className="w-full mb-4 p-2 rounded bg-black/30 focus:outline-none"
       />
 
       {/* 🧾 Reviews */}
@@ -161,8 +174,8 @@ export default function GamePage() {
                 key={i}
                 className="relative bg-white/10 p-3 rounded-xl group"
               >
-                {/* 🗑️ Delete ONLY if owner */}
-                {user?.email === r.user && (
+                {/* 🗑️ Only owner can delete */}
+                {user?.username === r.user && (
                   <button
                     onClick={() => deleteReview(i)}
                     className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 px-2 py-1 text-xs rounded opacity-0 group-hover:opacity-100 transition"
