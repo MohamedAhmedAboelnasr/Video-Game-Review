@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getGames, saveGames } from "../utils/storage";
-import ReviewCard from "../components/ReviewCard";
 import { useAuth } from "../context/AuthContext";
 
 export default function GamePage() {
@@ -12,13 +11,21 @@ export default function GamePage() {
   const [game, setGame] = useState(null);
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
+  const [reviewSearch, setReviewSearch] = useState("");
 
-  // Load game
   useEffect(() => {
     const games = getGames();
-    const found = games.find((g) => g.id === Number(id));
-    setGame(found);
+    setGame(games.find((g) => g.id === Number(id)));
   }, [id]);
+
+  // ⭐ Average Rating
+  const avgRating =
+    game && game.reviews.length > 0
+      ? (
+          game.reviews.reduce((sum, r) => sum + r.rating, 0) /
+          game.reviews.length
+        ).toFixed(1)
+      : null;
 
   // ➕ Add Review
   function addReview() {
@@ -26,120 +33,149 @@ export default function GamePage() {
 
     const games = getGames();
 
-    const updated = games.map((g) => {
-      if (g.id === Number(id)) {
-        return {
-          ...g,
-          reviews: [
-            ...g.reviews,
-            {
-              user: user?.email || "Guest",
-              rating,
-              comment,
-            },
-          ],
-        };
-      }
-      return g;
-    });
+    const updated = games.map((g) =>
+      g.id === Number(id)
+        ? {
+            ...g,
+            reviews: [
+              ...g.reviews,
+              { user: user?.email || "Guest", rating, comment },
+            ],
+          }
+        : g
+    );
 
     saveGames(updated);
     setGame(updated.find((g) => g.id === Number(id)));
     setComment("");
+    setRating(5);
   }
 
-  // 🗑️ Delete Review
+  // 🗑️ Delete Review (ONLY OWNER)
   function deleteReview(index) {
     const confirmDelete = window.confirm("Delete this review?");
     if (!confirmDelete) return;
 
     const games = getGames();
 
-    const updated = games.map((g) => {
-      if (g.id === Number(id)) {
-        const newReviews = g.reviews.filter((_, i) => i !== index);
-        return { ...g, reviews: newReviews };
-      }
-      return g;
-    });
+    const updated = games.map((g) =>
+      g.id === Number(id)
+        ? {
+            ...g,
+            reviews: g.reviews.filter((_, i) => i !== index),
+          }
+        : g
+    );
 
     saveGames(updated);
     setGame(updated.find((g) => g.id === Number(id)));
   }
 
-  if (!game) return <p className="p-5 text-white">Game not found</p>;
+  if (!game) return null;
 
   return (
     <div className="p-6 max-w-4xl mx-auto text-white">
 
+      {/* 🔙 Back Button */}
       <button
-        onClick={() => navigate("/")}
-        className="mb-4 text-blue-400 hover:underline"
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 px-4 py-2 mb-6 rounded-xl 
+                   bg-white/10 backdrop-blur border border-white/20 
+                   hover:bg-white/20 hover:scale-105 
+                   transition-all duration-200 shadow-md"
       >
-        ← Back
+        <span className="text-lg">←</span>
+        <span className="font-medium">Back</span>
       </button>
 
-      <h1 className="text-3xl font-bold mb-3">{game.title}</h1>
+      {/* 🎮 Title */}
+      <h1 className="text-3xl font-bold mb-2">{game.title}</h1>
 
+      {/* ⭐ Average Rating */}
+      {avgRating && (
+        <p className="mb-4 text-yellow-400 font-semibold">
+          ⭐ {avgRating} / 5 ({game.reviews.length} reviews)
+        </p>
+      )}
+
+      {/* 🖼️ Image */}
       <img
         src={game.image}
         alt={game.title}
-        className="w-full max-h-[500px] object-contain bg-black rounded-xl mb-5"
+        className="w-full max-h-[500px] object-contain bg-black rounded-xl mb-6"
       />
 
       {/* ✍️ Add Review */}
-      <div className="bg-gray-800 p-4 rounded-xl mb-6">
+      <div className="bg-white/10 backdrop-blur p-4 rounded-xl mb-6">
         <textarea
-          placeholder="Write your review..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          className="w-full p-2 rounded bg-gray-700 border border-gray-600 mb-2 focus:outline-none"
+          placeholder="Write review..."
+          className="w-full p-2 rounded bg-black/30 mb-3"
         />
 
-        <div className="flex gap-2 items-center">
-          <select
-            value={rating}
-            onChange={(e) => setRating(Number(e.target.value))}
-            className="p-2 bg-gray-700 rounded border border-gray-600"
-          >
-            {[1, 2, 3, 4, 5].map((n) => (
-              <option key={n}>{n}</option>
-            ))}
-          </select>
-
-          <button
-            onClick={addReview}
-            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
-          >
-            Submit Review
-          </button>
+        {/* ⭐ Star Rating */}
+        <div className="flex gap-1 text-2xl cursor-pointer mb-3">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <span
+              key={n}
+              onClick={() => setRating(n)}
+              className={n <= rating ? "text-yellow-400" : "text-gray-500"}
+            >
+              ★
+            </span>
+          ))}
         </div>
 
-        {/* 👤 Current User */}
+        <button
+          onClick={addReview}
+          className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded"
+        >
+          Submit Review
+        </button>
+
         <p className="text-sm text-gray-400 mt-2">
           Posting as: {user ? user.email : "Guest"}
         </p>
       </div>
+
+      {/* 🔍 Search Reviews */}
+      <input
+        placeholder="Search reviews..."
+        value={reviewSearch}
+        onChange={(e) => setReviewSearch(e.target.value)}
+        className="w-full mb-4 p-2 rounded bg-black/30"
+      />
 
       {/* 🧾 Reviews */}
       <div className="space-y-4">
         {game.reviews.length === 0 ? (
           <p className="text-gray-400">No reviews yet</p>
         ) : (
-          game.reviews.map((r, i) => (
-            <div key={i} className="relative">
-              
-              {/* Delete Button */}
-              <button
-                onClick={() => deleteReview(i)}
-                className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 px-2 py-1 text-xs rounded"
+          game.reviews
+            .filter((r) =>
+              r.comment.toLowerCase().includes(reviewSearch.toLowerCase())
+            )
+            .map((r, i) => (
+              <div
+                key={i}
+                className="relative bg-white/10 p-3 rounded-xl group"
               >
-                🗑️
-              </button>
+                {/* 🗑️ Delete ONLY if owner */}
+                {user?.email === r.user && (
+                  <button
+                    onClick={() => deleteReview(i)}
+                    className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 px-2 py-1 text-xs rounded opacity-0 group-hover:opacity-100 transition"
+                  >
+                    🗑️
+                  </button>
+                )}
 
-              <ReviewCard review={r} />
-            </div>
-          ))
+                <p className="text-sm text-purple-400">{r.user}</p>
+                <p>⭐ {r.rating}</p>
+                <p>{r.comment}</p>
+              </div>
+            ))
         )}
       </div>
     </div>

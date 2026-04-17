@@ -1,15 +1,21 @@
 @import "tailwindcss";
 
 body {
-  background-image: url("public/simple-line-art-pattern-with-video-game-elements-blue-background-seamless-wallpaper-design-is-style-video-games-concept-banner_1256366-7653.avif");
+  font-family: 'Poppins', sans-serif;
+
+  background-image: url("/public/wallpaper.jpg");
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
   background-attachment: fixed;
 
-  /* Dark overlay effect */
-  background-color: rgba(0, 0, 0, 0.7);
-  background-blend-mode: darken;
-
   @apply text-white;
+}
+
+/* 🌑 Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: -1;
 }
